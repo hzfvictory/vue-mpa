@@ -6,10 +6,14 @@ const projectName = process.argv[3];  // build后面的文件目录  yarn build 
 const isAnalyze = process.env.ANALYZE;
 const isProduction = process.env.NODE_ENV;
 
-
-function getEntry() {
+const getEntry = () => {
   let entries = {}
   if (isProduction === 'production') {
+
+    if (!projectName) {
+      console.error('请添加要打包的项目文件夹')
+      return
+    }
     entries[projectName] = {
       // page的入口
       entry: 'src/modules/' + projectName + '/main.js',
@@ -19,7 +23,7 @@ function getEntry() {
       filename: 'index.html',
       // template 中的 title 标签需要是 <title><%= htmlWebpackPlugin.options.title %></title>
       title: projectName,
-      chunks: ['chunk-vendors', 'chunk-common', projectName]
+      chunks: ['manifest', 'chunk-vendors', projectName]
     }
   } else {
     // [ './src/modules/projectA/main.js', './src/modules/projectB/main.js' ]
@@ -37,7 +41,7 @@ function getEntry() {
         filename: `${fileName}.html`,
         title: fileName,
         // 提取出来的通用 chunk 和 vendor chunk。
-        chunks: ['chunk-vendors', 'chunk-common', fileName]
+        chunks: ['manifest', 'chunk-vendors', fileName]
       }
     }
   }
@@ -48,8 +52,15 @@ function getEntry() {
 module.exports = {
   productionSourceMap: false, // 生产禁止显示源代码
   publicPath: projectName ? '/' + projectName : '/',
-  outputDir: 'dist/' + projectName,
+  outputDir: 'dist/' + projectName,  // 不能动态输出
   pages: getEntry(),
+  // devServer: {
+  //   historyApiFallback: {
+  //     rewrites: [
+  //       { from: new RegExp('/projectA'), to: '/projectA#/index.html' },
+  //     ]
+  //   }
+  // },
   chainWebpack: config => {
     if (isAnalyze) {
       config
