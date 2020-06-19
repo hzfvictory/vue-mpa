@@ -6,7 +6,7 @@ const projectName = process.argv[3];  // build后面的文件目录  yarn build 
 const isAnalyze = process.env.ANALYZE;
 const isProduction = process.env.NODE_ENV;
 
-const getEntry = () => {
+const setPages = () => {
   let entries = {}
   if (isProduction === 'production') {
 
@@ -23,7 +23,7 @@ const getEntry = () => {
       filename: 'index.html',
       // template 中的 title 标签需要是 <title><%= htmlWebpackPlugin.options.title %></title>
       title: projectName,
-      chunks: ['manifest', 'chunk-vendors', projectName]
+      chunks: ['chunk-common', 'chunk-vendors', projectName]
     }
   } else {
     // [ './src/modules/projectA/main.js', './src/modules/projectB/main.js' ]
@@ -41,7 +41,7 @@ const getEntry = () => {
         filename: `${fileName}.html`,
         title: fileName,
         // 提取出来的通用 chunk 和 vendor chunk。
-        chunks: ['manifest', 'chunk-vendors', fileName]
+        chunks: ['chunk-common', 'chunk-vendors', fileName]
       }
     }
   }
@@ -53,7 +53,7 @@ module.exports = {
   productionSourceMap: false, // 生产禁止显示源代码
   publicPath: projectName ? '/' + projectName : '/',
   outputDir: 'dist/' + projectName,  // 不能动态输出
-  pages: getEntry(),
+  pages: setPages(),
   // devServer: {
   //   historyApiFallback: {
   //     rewrites: [
