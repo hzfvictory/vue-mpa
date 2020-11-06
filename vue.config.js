@@ -6,10 +6,11 @@ const projectName = process.argv[3];  // build后面的文件目录  yarn build 
 const isAnalyze = process.env.ANALYZE;
 const isProduction = process.env.NODE_ENV;
 
+// 官方提供的方法
 const setPages = () => {
   let entries = {}
+  /*线上环境*/
   if (isProduction === 'production') {
-
     if (!projectName) {
       console.error('请添加要打包的项目文件夹')
       return
